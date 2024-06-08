@@ -1,0 +1,45 @@
+IaC 
+
+1. Create simple Node.js Application :
+
+const express = require('express');
+const app = express();
+const port = 3000;
+
+app.get('/', (req, res) => {
+  res.send(Hello World);
+});
+
+app.listen(port, () => {
+  console.log(`App listening at http://localhost:${port}`);
+});
+
+2. Create Docker file with JSON file & push the docker image to ECR :
+
+FROM node:14
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+
+EXPOSE 3000
+CMD [ "node", "app.js" ]
+
+$ aws ecr create-repository --repository-name hello-world --region us-west-2 (creating ecr)
+$ docker build -t hello-world (docker image)
+$ docker tag hello-world:latest <aws_account_id>.dkr.ecr.us-west-2.amazonaws.com/hello-world:latest (docker image)
+$ aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin <aws_account_id>.dkr.ecr.us-west-2.amazonaws.com (authentication docker to ecr)
+$ docker push <aws_account_id>.dkr.ecr.us-west-2.amazonaws.com/hello-world:latest (push to ecr)
+
+3. Terrafor Confirmation
+
+4. CD
+
+terraform init
+terraform plan
+terraform apply
+
+5. Test the application with public ip & you will see the Hello World message.
